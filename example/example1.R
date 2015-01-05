@@ -22,18 +22,20 @@ rm(dat)
 #           A.P, A.Z, B 
 ################################################
 source("./R/RuleGenerator.R")
-ruleset <- RuleGenThr(dat.x, num.thr = 10)
+#ruleset <- RuleGenThr(dat.x, num.thr = 10)
+ruleset <- RuleGenRandomforest(dat.x, dat.y)
 n <- length(ruleset)
 A <- ABuilder(ruleset, m, n, X = dat.x)
 A.P <- A[which(dat.y == "b"),]
 A.Z <- A[which(dat.y != "b"),]
+#sort(unlist(lapply(1:n, function(i) sum(A.P[,i])-sum(A.Z[,i]))))
 B <- BBuilder(ruleset, t, n)
 
 ##############################################
 # Find a feasible integral solution to the primal
 ################################################
-alpha <- 10
-beta <- 10 
+alpha <- 0 
+beta <- 40
 # init w = 0 and compute err appropriately
 M <- alpha / t * matrix(1,t,n) + beta * B
 w <- rep(0, n)
@@ -53,7 +55,7 @@ dual.dir <- rep("<=",n+nrow(A.P))
 dual.rhs <- c(colSums(M)+colSums(A.Z), rep(1,nrow(A.P)))
 dual <- lp(direction = "max", dual.coef, dual.con, dual.dir, dual.rhs)
 dual.sol <- dual$solution
-dual.sol[which(dual.sol != 0)] = 1
+#dual.sol[which(dual.sol != 0)] = 1
 
 ################################################################
 #       Screen over all rules

@@ -21,6 +21,40 @@ RuleGenThr <- function(X, num.thr = 10) {
 }
 
 ################################
+# rule generation via RuleFit
+# Input:
+#   X:            complete observation-feature matrix
+# Output:         Vector of rules
+################################
+RuleGenRulefit <- function(X) {
+  # not finished due to rulefit closed
+  stop("Function Not Finished")
+  
+  platform = "windows"
+  rfhome = "C:/Users/jyfea_000/Dropbox/Research/RuleBased/code/RuleFit"
+  source("C:/Users/jyfea_000/Dropbox/Research/RuleBased/code/RuleFit/rulefit.r")
+  library(akima, lib.loc = rfhome)
+  rfmod <- rulefit(dat.x, as.vector(as.matrix(dat.y)), rfmode = "class")  
+}
+
+################################
+# rule generation via randomForest
+# Input:
+#   X:            complete observation-feature matrix
+#   Y:            observed response vector  
+# Output:         Vector of rules
+################################
+RuleGenRandomforest <- function(X, Y) {
+  require(randomForest)  
+  require(inTrees)
+  rf <- randomForest(X, Y, ntree = 300)
+  treeList <- RF2List(rf)
+  exec <- extractRules(treeList, X, maxdepth = 3, ntree = treeList$ntree)  
+  #ruleMetric <- getRuleMetric(exec, X, Y)
+  return(exec)
+}
+
+################################
 # Matrix A Builder
 # Input:
 #   rules:        vector of rules
@@ -49,9 +83,11 @@ ABuilder <- function(rules, m, n, X) {
 BBuilder <- function(rules, t, n) {
   B <- matrix(0, t, n)
   pattern1 <- "\\[,\\d*\\]"
-  rules1 <- unlist(regmatches(ruleset, gregexpr(pattern1, ruleset)))
-  pattern2 <- "\\d+"
-  rules2 <- as.integer(unlist(regmatches(rules1, gregexpr(pattern2, rules1))))
-  for (i in 1:n) B[rules2[i], i] <- 1
+  rules1 <- regmatches(ruleset, gregexpr(pattern1, ruleset))
+  for (i in 1:length(rules1)) {
+    pattern2 <- "\\d+"
+    rules2 <- as.integer(unlist(regmatches(rules1[[i]], gregexpr(pattern2, rules1[[i]]))))
+    B[rules2,i] <- 1
+  }
   return(B)
 }
