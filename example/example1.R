@@ -30,6 +30,9 @@ A.P <- A[which(dat.y == "b"),]
 A.Z <- A[which(dat.y != "b"),]
 #sort(unlist(lapply(1:n, function(i) sum(A.P[,i])-sum(A.Z[,i]))))
 B <- BBuilder(ruleset, t, n)
+write.table(A.P, "./matlab/AP.csv", sep = ",", row.names = FALSE, col.names = FALSE)
+write.table(A.Z, "./matlab/AZ.csv", sep = ",", row.names = FALSE, col.names = FALSE)
+write.table(B, "./matlab/B.csv", sep = ",", row.names = FALSE, col.names = FALSE)
 
 ##############################################
 # Find a feasible integral solution to the primal

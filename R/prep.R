@@ -1,33 +1,9 @@
 rm(list=ls())
-# function
-Bbuild <- function(ruleset) {
-  B <- matrix(0, t, n)
-  for (i in 1:nrow(ruleset)) {
-    tmp.rule <- ruleset[i]
-    tmp.rule.set <- unlist(strsplit(tmp.rule, ","))
-    tmp.var <- c()
-    for (j in 2:length(tmp.rule.set)) {
-      tmp.var <- c(tmp.var, unlist(strsplit(tmp.rule.set[j],"]"))[1])
-    }  
-    tmp.var <- as.integer(tmp.var)
-    B[tmp.var, i] = 1
-  }
-  return(B)
-}
-
-Abuild <- function(ruleset) {
-  A <- matrix(0, m, n)
-  for (i in 1:nrow(ruleset)) {
-    rule <- gsub("X", "dat.x", ruleset[i])
-    rule.eval <- eval(parse(text = rule))
-    A[rule.eval, i] = 1  
-  }
-  return(A)
-}
+source("RuleScreen.Rproj")
 
 # input
-dat.x <- read.csv("../data/Depression/x.csv", header = FALSE)
-dat.y <- read.csv("../data/Depression/y.csv", header = FALSE)
+dat.x <- read.csv("C:/Users/jyfea_000/Dropbox/Research/RuleBased/data/Depression/x.csv", header = FALSE)
+dat.y <- read.csv("C:/Users/jyfea_000/Dropbox/Research/RuleBased/data/Depression/y.csv", header = FALSE)
 
 no.del <- c()
 for (i in 1:ncol(dat.x)) {
@@ -76,3 +52,6 @@ A.Z <- A[which(dat.y==-1),]
 # save image
 unlist("./depression.RData")
 save(A.P, A.Z, B, t, m, n, file = "depression.RData")
+write.table(A.P, "./matlab/AP.csv", sep = ",", row.names = FALSE, col.names = FALSE)
+write.table(A.Z, "./matlab/AZ.csv", sep = ",", row.names = FALSE, col.names = FALSE)
+write.table(B, "./matlab/B.csv", sep = ",", row.names = FALSE, col.names = FALSE)
