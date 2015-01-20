@@ -10,7 +10,7 @@ B = csvread('./matlab/B.csv');
 [t, n] = size(B);
 
 %% predefined parmeter
-alpha = 1;          
+alpha = 30;          
 beta = 5;          
 
 %% LP solver
@@ -27,10 +27,27 @@ cvx_begin
         eps_P <= 1;
 cvx_end
 
+%% L1 norm Group Lasso Solver
+cvx_solver sedumi
+cvx_begin
+    variable eps_P(m_P) nonnegative;
+    variable eps_Z(m_Z) nonnegative;
+    variable w(n) nonnegative;
+    minimize(sum(eps_P) + sum(eps_Z));
+    subject to
+        norm(w, 1) <= alpha
+        sum(B * w) <= beta;
+        w <= sum(B' * v);
+        AP * w + eps_P >= 1;
+        AZ * w == eps_Z;
+        w <= 1;
+        eps_P <= 1;
+cvx_end
+
 %% analysize results
-w = (round(w.*1000))./1000;
-feature = (round((B * w).*1000))./1000;
-num_w = nnz(w);
+rule = (round(w.*1000))./1000;
+feature = (round((B * rule).*1000))./1000;
+num_rule = nnz(rule);
 num_feature = nnz(feature);
 loc_w = find(w);
 loc_feature = find(feature);
